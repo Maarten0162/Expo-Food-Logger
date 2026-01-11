@@ -3,8 +3,16 @@ import { useRouter } from "expo-router";
 import React, { useEffect, useState } from "react";
 import { ActivityIndicator, Button, Image, Text, View } from "react-native";
 
+import { StyleSheet } from "react-native";
+import { colors } from "./theme/color";
+import { BottomNavBar } from "./components/navigation/BottomNavBar";
+import { ScreenKey } from "./components/screens/types";
+import { ScreenRenderer } from "./components/screens/ScreenRenderer";
+
 export default function Index() {
-  const router = useRouter();
+  const router = useRouter(); 
+  const [activeTab, setActiveTab] = useState<ScreenKey>("home");
+
 
   const [food, setFood] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -30,46 +38,66 @@ export default function Index() {
   }, []);
 
   return (
-    <View
-      style={{
-        flex: 1,
-        justifyContent: "center",
-        alignItems: "center",
-        padding: 20,
-        gap: 20,
-      }}
-    >
-      {/* ⬇️ Navigation button */}
-      <Button title="Go to scanner" onPress={() => router.push("/scanner")} />
+    // <View
+    //   style={{
+    //     flex: 1,
+    //     justifyContent: "center",
+    //     alignItems: "center",
+    //     padding: 20,
+    //     gap: 20,
+    //   }}
+    // >
+    //   {/* ⬇️ Navigation button */}
+    //   <Button title="Go to scanner" onPress={() => router.push("/scanner")} />
 
-      {loading ? (
-        <ActivityIndicator size="large" color="#0000ff" />
-      ) : error ? (
-        <Text style={{ color: "red", textAlign: "center" }}>
-          ⚠️ Error: {error}
-        </Text>
-      ) : (
-        <>
-          <Text style={{ fontSize: 18, marginBottom: 10 }}>Food data:</Text>
-          {food.length === 0 ? (
-            <Text>No food items found.</Text>
-          ) : (
-            food.map((item) => (
-              <Text key={item.id}>
-                🍎 {item.foodname} - {item.calories} kcal
-              </Text>
-            ))
-          )}
-        </>
-      )}
+    //   {loading ? (
+    //     <ActivityIndicator size="large" color="#0000ff" />
+    //   ) : error ? (
+    //     <Text style={{ color: "red", textAlign: "center" }}>
+    //       ⚠️ Error: {error}
+    //     </Text>
+    //   ) : (
+    //     <>
+    //       <Text style={{ fontSize: 18, marginBottom: 10 }}>Food data:</Text>
+    //       {food.length === 0 ? (
+    //         <Text>No food items found.</Text>
+    //       ) : (
+    //         food.map((item) => (
+    //           <Text key={item.id}>
+    //             🍎 {item.foodname} - {item.calories} kcal
+    //           </Text>
+    //         ))
+    //       )}
+    //     </>
+    //   )}
 
-      <Image
-        source={require("../assets/images/icon.png")}
-        style={{ width: 200, height: 200, marginTop: 20 }}
+    //   <Image
+    //     source={require("../assets/images/icon.png")}
+    //     style={{ width: 200, height: 200, marginTop: 20 }}
+    //   />
+    // </View>
+    <View style={styles.container}>
+      <View style={styles.content}>
+        <ScreenRenderer activeTab={activeTab} />
+      </View>
+
+      <BottomNavBar
+        activeTab={activeTab}
+        onTabChange={setActiveTab}
       />
     </View>
   );
+  
 }
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: colors.background,
+  },
+  content: {
+    flex: 1,
+  },
+});
 
 async function getfood() {
   const response = await fetch(
@@ -78,3 +106,4 @@ async function getfood() {
   const data = await response.json();
   console.log(data);
 }
+
