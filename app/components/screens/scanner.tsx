@@ -1,167 +1,97 @@
-import { colors } from "@/app/theme/color";
 import { BarcodeScanningResult, CameraView, useCameraPermissions } from "expo-camera";
 import React, { useEffect, useState } from "react";
 import { View, Text, StyleSheet, TouchableOpacity, Vibration } from "react-native";
 import * as Haptics from "expo-haptics";
-
-
-interface FSProduct {
-    brands: string;
-    ingredients_text: string;
-    nutriments: Nutriments;
-}
-
-interface OFFProduct {
-    brands: string;
-    ingredients_text: string;
-    nutriments: Nutriments;
-}
+import { useRouter } from "expo-router";
 
 interface Nutriments {
-    carbohydrates_100g?: number;
-    proteins_100g?: number;
-    fat_100g?: number;
+  carbohydrates_100g?: number;
+  proteins_100g?: number;
+  fat_100g?: number;
 }
 
 interface ProductData {
-    code: string;
-    product: FSProduct | OFFProduct;
-    source: "FoodSecrect" | "OFF"
+  code: string;
+  product: {
+    brands: string;
+    ingredients_text: string;
+    nutriments: Nutriments;
+  };
 }
 
 export const ScannerScreen = () => {
+  const router = useRouter(); // ✅ CORRECT PLACE
   const [permission, requestPermission] = useCameraPermissions();
-      const [scanned, setScanned] = useState(false);
-      const [data, setData] = useState("");
-      const [product, setProduct] = useState<any | null>(null);
-  
-      // auto-request on mount
-      useEffect(() => {
-          if (permission && !permission.granted) {
-              requestPermission();
-          }
-      }, [permission]);
-  
-      if (!permission) {
-          return <Text>Checking camera permission...</Text>;
-      }
-  
-      if (!permission.granted) {
-          return (
-              <View style={styles.center}>
-                  <Text style={{ marginBottom: 10 }}>
-                      Camera permission is required to scan.
-                  </Text>
-                  <TouchableOpacity onPress={requestPermission}>
-                      <Text style={{ color: "blue" }}>Tap to grant permission</Text>
-                  </TouchableOpacity>
-              </View>
-          );
-      }
-  
-      const handleScan = async (result: BarcodeScanningResult) => {
-          if (scanned) return;
-          setScanned(true);
-  
-          Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
-          Vibration.vibrate([200, 100, 200]);
-  
-          setData(result.data);
-  
-          try {
-  
-              const productData = await fetchProduct(result.data);
-              setProduct(productData);
-          } catch (err) {
-              console.error("Error fetching product:", err);
-              setProduct(null);
-          }
-      };
+  const [scanned, setScanned] = useState(false);
 
-      const fetchProduct = async (barcode: string): Promise<ProductData | null> => {
-    try {
-        const response = await fetch(
-            `https://world.openfoodfacts.org/api/v0/product/${barcode}.json`
-        );
-        const data: ProductData = await response.json();
-
-        // Make sure nutriments exists
-        if (!data.product.nutriments) {
-            data.product.nutriments = {};
-        }
-
-        // Access variables safely
-        const productCode = data.code;
-        const brand = data.product.brands;
-        const carbs = data.product.nutriments?.carbohydrates_100g;
-        const fat = data.product.nutriments?.fat_100g;
-        const protein = data.product.nutriments?.proteins_100g;
-
-        console.log(productCode, brand, carbs, fat, protein );
-
-        return data; // ✅ return the product data
-    } catch (error) {
-        console.error("Error fetching product:", error);
-        return null;
+  useEffect(() => {
+    if (permission && !permission.granted) {
+      requestPermission();
     }
-};
-  
+  }, [permission]);
+
+  if (!permission) {
+    return <Text>Checking camera permission...</Text>;
+  }
+
+  if (!permission.granted) {
+    return (
+      <View style={styles.center}>
+        <Text>Camera permission is required</Text>
+        <TouchableOpacity onPress={requestPermission}>
+          <Text style={{ color: "blue" }}>Grant permission</Text>
+        </TouchableOpacity>
+      </View>
+    );
+  }
+
+  const fetchProduct = async (barcode: string): Promise<ProductData | null> => {
+    try {
+      const response = await fetch(
+        `https://world.openfoodfacts.org/api/v0/product/${barcode}.json`
+      );
+      return await response.json();
+    } catch {
+      return null;
+    }
+  };
+
+  const handleScan = async (result: BarcodeScanningResult) => {
+    if (scanned) return;
+    setScanned(true);
+
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
+    Vibration.vibrate(200);
+
+    const productData = await fetchProduct(result.data);
+
+    if (productData) {
+      router.push({
+        pathname: "/components/screens/AddFood",
+        params: {
+          product: JSON.stringify(productData),
+        },
+      });
+    }
+  };
+
   return (
     <View style={{ flex: 1 }}>
-                <CameraView
-                    style={StyleSheet.absoluteFill}
-                    onBarcodeScanned={handleScan}
-                    barcodeScannerSettings={{
-                        barcodeTypes: ["ean13", "ean8", "qr", "upc_a", "upc_e"],
-                    }}
-                />
-    
-                {scanned && (
-                    <View style={styles.resultBox}>
-                        <Text>Scanned: {data}</Text>
-    
-                        {product === null ? (
-                            <Text>Loading product...</Text> // <-- show while fetching
-                        ) : product ? (
-                            <Text>Product: {JSON.stringify(product, null, 2)}</Text>
-                        ) : (
-                            <Text>Product not found</Text> // <-- only if fetch returned null
-                        )}
-    
-                        <TouchableOpacity onPress={() => {
-                            setScanned(false);
-                            setProduct(null); // reset for next scan
-                        }}>
-                            <Text style={{ color: "blue" }}>Scan again</Text>
-                        </TouchableOpacity>
-                    </View>
-                )}
-            </View>
+      <CameraView
+        style={StyleSheet.absoluteFill}
+        onBarcodeScanned={handleScan}
+        barcodeScannerSettings={{
+          barcodeTypes: ["ean13", "ean8", "upc_a", "upc_e"],
+        }}
+      />
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
+  center: {
     flex: 1,
-    alignItems: "center",
     justifyContent: "center",
+    alignItems: "center",
   },
-  text: {
-    color: colors.white,
-    fontSize: 24,
-  },
-   center: {
-        flex: 1,
-        justifyContent: "center",
-        alignItems: "center",
-    },
-    resultBox: {
-        position: "absolute",
-        bottom: 40,
-        alignSelf: "center",
-        backgroundColor: "#fff",
-        padding: 15,
-        borderRadius: 10,
-    },
 });
-
