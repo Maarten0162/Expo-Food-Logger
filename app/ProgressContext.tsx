@@ -1,12 +1,16 @@
 // app/ProgresContext.tsx
-import React, { createContext, useState, useEffect, ReactNode } from "react";
+import React, { createContext, useState, useEffect, ReactNode, useContext } from "react";
 import axios from "axios";
 
 export interface Progres {
-  calorie_progress: number;
-  protein_progress: number;
-  carb_progress: number;
-  fat_progress: number;
+  total_calories: number;
+  total_protein: number;
+  total_carbs: number;
+  total_fat: number;
+  calories_left: number;
+  protein_left: number;
+  carbs_left: number;
+  fat_left: number;
 }
 
 interface ProgresContextType extends Progres {}
@@ -20,24 +24,56 @@ export const ProgresContext = createContext<ProgresContextType | undefined>(unde
 
 export const ProgresProvider = ({ children }: ProgresProviderProps) => {
   const [progres, setProgres] = useState<Progres>({
-    calorie_progress: 0,
-    protein_progress: 0,
-    carb_progress: 0,
-    fat_progress: 0,
+    total_calories: 0,
+    total_protein: 0,
+    total_carbs: 0,
+    total_fat: 0,
+    calories_left: 0,
+    protein_left: 0,
+    carbs_left: 0,
+    fat_left: 0,
   });
 
-  useEffect(() => {
-    axios
-      .get<Progres[]>("https://food-logger-backend-one.vercel.app/api/user-progress")
-      .then((response) => {
-        if (response.data.length > 0) {
-          setProgres(response.data[0]); // take the first item
-        }
-      })
-      .catch((error) => {
-        console.error("Failed to fetch progress:", error);
+useEffect(() => {
+  const fetchProgress = async () => {
+    try {
+      const response = await axios.get<Progres>(
+        "https://food-logger-backend-one.vercel.app/api/user-progress"
+      );
+      console.log("Fetched progress:", response.data);
+
+      // Convert strings to numbers
+      const data = response.data;
+      setProgres({
+        total_calories: Number(data.total_calories),
+        total_protein: Number(data.total_protein),
+        total_carbs: Number(data.total_carbs),
+        total_fat: Number(data.total_fat),
+        calories_left: Number(data.calories_left),
+        protein_left: Number(data.protein_left),
+        carbs_left: Number(data.carbs_left),
+        fat_left: Number(data.fat_left),
       });
-  }, []);
+    } catch (err) {
+      console.error("Failed to fetch progress:", err);
+    }
+  };
+
+  fetchProgress();
+}, []);
+
+
+
+
 
   return <ProgresContext.Provider value={progres}>{children}</ProgresContext.Provider>;
 };
+
+export function useProgres() {
+    const context = useContext(ProgresContext);
+    if (context === undefined) {
+        throw new Error("progresscontext  Undifined");
+         
+    }
+    return context;
+}

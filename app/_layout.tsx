@@ -7,13 +7,13 @@ import { ProgresProvider } from "./ProgressContext";
 export default function RootLayout() {
   return (
     <GoalsProvider>
-      {/* <ProgresProvider> */}
+      <ProgresProvider>
         <Stack
           screenOptions={{
             headerShown: false, // hides the default header
           }}
         />
-      {/* </ProgresProvider> */}
+      </ProgresProvider>
     </GoalsProvider>
   );
 }
