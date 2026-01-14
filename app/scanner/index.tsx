@@ -84,8 +84,6 @@ const fetchProduct = async (barcode: string): Promise<ProductData | null> => {
         const fat = data.product.nutriments?.fat_100g;
         const protein = data.product.nutriments?.proteins_100g;
 
-        console.log(productCode, brand, carbs, fat, protein );
-
         return data; // ✅ return the product data
     } catch (error) {
         console.error("Error fetching product:", error);
@@ -195,5 +193,8 @@ const styles = StyleSheet.create({
         backgroundColor: "#fff",
         padding: 15,
         borderRadius: 10,
+    },
+    camera: {
+        width: "100%"
     },
 });

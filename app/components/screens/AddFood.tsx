@@ -3,8 +3,7 @@ import { useRouter, useLocalSearchParams } from "expo-router";
 
 
 export default function ProductDetails() {
-    const params = useLocalSearchParams(); // This is the correct hook to get route params
-  console.log(params.product); // your JSON string
+    const params = useLocalSearchParams();
  const productString = Array.isArray(params.product)
     ? params.product[0]
     : params.product;

@@ -3,26 +3,41 @@ import React, { useEffect, useState } from "react";
 import { View, Text, StyleSheet, TouchableOpacity, Vibration } from "react-native";
 import * as Haptics from "expo-haptics";
 import { useRouter } from "expo-router";
+import { FoodItem } from "@/app/FoodContext";
+import { useScreens } from "@/app/ScreenContext";
+import { useFoodFlow } from "@/app/FoodFlowProvider";
 
 interface Nutriments {
   carbohydrates_100g?: number;
   proteins_100g?: number;
   fat_100g?: number;
+  "energy-kcal_100g"?: number;
+  sugars_100g?: number;
+  salt_100g?: number;
+  saturated_fat_100g?: number;
 }
 
 interface ProductData {
   code: string;
   product: {
-    brands: string;
-    ingredients_text: string;
+    id: string;
+    product_name: string;
+    brands?: string;
+    ingredients_text?: string;
     nutriments: Nutriments;
+    categories_tags?: string[];
+    serving_size?: string;
   };
 }
+
 
 export const ScannerScreen = () => {
   const router = useRouter(); // ✅ CORRECT PLACE
   const [permission, requestPermission] = useCameraPermissions();
   const [scanned, setScanned] = useState(false);
+
+  const {activeTab, setActiveTab} = useScreens();
+  const {setFoodItem} = useFoodFlow();
 
   useEffect(() => {
     if (permission && !permission.granted) {
@@ -64,14 +79,25 @@ export const ScannerScreen = () => {
     Vibration.vibrate(200);
 
     const productData = await fetchProduct(result.data);
+    const product = productData!.product;
+
+
+    
 
     if (productData) {
-      router.push({
-        pathname: "/components/screens/AddFood",
-        params: {
-          product: JSON.stringify(productData),
-        },
-      });
+      const fooditem : FoodItem = {
+        id: productData!.code,
+        name: product.product_name || "Unknown Product",
+        calories: product.nutriments?.["energy-kcal_100g"] ?? 0,
+        protein: product.nutriments?.proteins_100g ?? 0,
+        carbs: product.nutriments?.carbohydrates_100g ?? 0,
+        fat: product.nutriments?.fat_100g ?? 0,
+        amount: "100",
+        date: new Date().toISOString(),
+        mealtype: "Breakfast", // default, user can change later
+      };
+      setFoodItem(fooditem);
+      setActiveTab("detail"); // move to detail screen
     }
   };
 

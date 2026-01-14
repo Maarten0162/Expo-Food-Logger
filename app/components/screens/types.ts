@@ -3,4 +3,6 @@ export type ScreenKey =
   | "log"
   | "add"
   | "search"
-  | "profile";
+  | "profile"
+  | "scanner"    
+  | "detail";

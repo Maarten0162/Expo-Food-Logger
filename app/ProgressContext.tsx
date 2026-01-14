@@ -40,7 +40,6 @@ useEffect(() => {
       const response = await axios.get<Progres>(
         "https://food-logger-backend-one.vercel.app/api/user-progress"
       );
-      console.log("Fetched progress:", response.data);
 
       // Convert strings to numbers
       const data = response.data;

@@ -47,6 +47,7 @@ export default DateSelector;
 
 const styles = StyleSheet.create({
   container: {
+    marginTop: 12,
     width: "100%",
     flexDirection: "row",
     alignItems: "center",

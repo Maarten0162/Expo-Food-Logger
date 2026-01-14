@@ -28,6 +28,7 @@ export const HomeScreen = () => {
 
 const styles = StyleSheet.create({
     container: {
+        marginTop: 16,
         padding: 16,
         width: "100%",          // make content take full screen width
         alignItems: "flex-start", // allow children to stretch

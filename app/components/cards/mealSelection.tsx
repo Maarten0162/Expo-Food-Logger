@@ -1,19 +1,11 @@
 import { View, Text, Pressable, StyleSheet } from "react-native";
 import { Plus, Coffee, Sun, Moon, Cookie } from "lucide-react-native";
 import { colors } from "@/app/theme/color";
+import { FoodItem, MealType } from "@/app/FoodContext";
 
-interface FoodItem {
-  id: string;
-  name: string;
-  calories: number;
-  protein: number;
-  carbs: number;
-  fat: number;
-  amount: string;
-}
 
 interface MealSectionProps {
-  title: "Breakfast" | "Lunch" | "Dinner" | "Snacks";
+  title: MealType;
   foods: FoodItem[];
   totalCalories: number;
   onAddFood: () => void;
@@ -50,7 +42,7 @@ const MealSection = ({
         </View>
 
         <Pressable style={styles.addButton} onPress={onAddFood}>
-          <Plus width={20} height={20} color="#ffffff" />
+          <Plus width={20} height={20} color={colors.background} />
         </Pressable>
       </View>
 
@@ -140,7 +132,7 @@ const styles = StyleSheet.create({
     width: 32,
     height: 32,
     borderRadius: 16,
-    backgroundColor: "#2563eb",
+    backgroundColor: "#6EFF4E",
     alignItems: "center",
     justifyContent: "center",
   },

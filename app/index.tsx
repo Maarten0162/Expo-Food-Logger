@@ -7,10 +7,12 @@ import { colors } from "./theme/color";
 import { BottomNavBar } from "./components/navigation/BottomNavBar";
 import { ScreenKey } from "./components/screens/types";
 import { ScreenRenderer } from "./components/screens/ScreenRenderer";
+import { useScreens } from "./ScreenContext";
 
 export default function Index() {
-  const router = useRouter(); 
-  const [activeTab, setActiveTab] = useState<ScreenKey>("home");
+  const router = useRouter();
+
+  const {activeTab, setActiveTab} = useScreens()
 
   const [food, setFood] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
