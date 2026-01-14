@@ -8,22 +8,26 @@ import { GoalsContext, useGoals } from "@/app/GoalsContext";
 
 export const HomeScreen = () => {
     const { calorie_goal, protein_goal, carb_goal, fat_goal } = useGoals();
-  return (
-     <ScrollView contentContainerStyle={styles.container} className="w-auto">
-      <CaloriesCard caloriesLeft={calorie_goal} />
-      <NutrientsCard proteinleft={protein_goal} carbsleft={carb_goal} fatleft={fat_goal}></NutrientsCard>
-    </ScrollView>
-  );
+    return (
+        <ScrollView
+            contentContainerStyle={styles.container}
+            showsVerticalScrollIndicator={false}
+        >
+            <CaloriesCard caloriesLeft={calorie_goal} />
+            <NutrientsCard
+                proteinleft={protein_goal}
+                carbsleft={carb_goal}
+                fatleft={fat_goal}
+            />
+        </ScrollView>
+
+    );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  text: {
-    color: colors.white,
-    fontSize: 24,
-  },
+    container: {
+        padding: 16,
+        width: "100%",          // make content take full screen width
+        alignItems: "flex-start", // allow children to stretch
+    },
 });
