@@ -1,9 +1,9 @@
+import { useGoals } from "@/app/GoalsContext";
+import { Droplet, EggFried, Wheat } from 'lucide-react-native';
 import { StyleSheet, View } from "react-native";
-import { colors } from "@/app/theme/color";
 import { SectionCard } from "../ui/sectionCard";
 import { MacroItem } from "./macroItem";
-import { Droplet, EggFried, Wheat } from 'lucide-react-native';
-
+import { colors } from "@/app/theme/color";
 
 type Props = {
     proteinleft: number;
@@ -11,25 +11,42 @@ type Props = {
     fatleft: number;
 };
 
-
 export const NutrientsCard = ({ proteinleft, carbsleft, fatleft }: Props) => {
+    const { protein_goal, carb_goal, fat_goal } = useGoals();
+    
+    const proteinProgress = ((protein_goal - proteinleft) / protein_goal) * 100;
+    const carbsProgress = ((carb_goal - carbsleft) / carb_goal) * 100;
+    const fatProgress = ((fat_goal - fatleft) / fat_goal) * 100;
+
     return (
         <SectionCard title="Nutrients">
             <View style={{ flexDirection: "row", alignItems: "center", gap: 10 }}>
                 <MacroItem
+                    showSpeedometer={true}
+                    speedometerColor="#D96262"
+                    progress={proteinProgress}
+                    iconSize={32}
                     key="protein"
-                    icon={<EggFried color="#D96262" />}
-                    label="g Protein left"
+                    icon={<EggFried size={32} color="#D96262" />}
+                    label="g Protein"
                     amountleft={proteinleft} />
                 <MacroItem
+                    showSpeedometer={true}
+                    speedometerColor="#7CD962"
+                    progress={carbsProgress}
+                    iconSize={32}
                     key="carbs"
-                    icon={<Wheat color="#7CD962" />}
-                    label="g Carbs left"
+                    icon={<Wheat size={32} color="#7CD962" />}
+                    label="g Carbs"
                     amountleft={carbsleft} />
                 <MacroItem
+                    showSpeedometer={true}
+                    speedometerColor="#D9C962"
+                    progress={fatProgress}
+                    iconSize={32}
                     key="fat"
-                    icon={<Droplet color="#D9C962" />}
-                    label="g Fat left"
+                    icon={<Droplet size={32} color="#D9C962" />}
+                    label="g Fat"
                     amountleft={fatleft} />
             </View>
         </SectionCard>

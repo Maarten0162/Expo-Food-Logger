@@ -12,9 +12,10 @@ export const CaloriesCard = ({ caloriesLeft }: Props) => {
   return (
     <SectionCard title="Calories" style={styles.card}>
       <MacroItem
+        showSpeedometer={true}
         key="calories"
         icon={<Ionicons name="flash" size={48} color="#6EC6FF" />}
-        label=" kcal left"
+        label=" kcal"
         amountleft={caloriesLeft}
       />
     </SectionCard>
