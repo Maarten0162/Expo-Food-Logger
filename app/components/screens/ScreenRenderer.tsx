@@ -20,7 +20,11 @@ const screens: Record<ScreenKey, React.ReactNode> = {
       <ScannerScreen />
     </FoodFlowProvider>
   ),
-  search: <SearchScreen />,
+  search: (
+    <FoodFlowProvider>
+      <SearchScreen />
+  </FoodFlowProvider>
+),
   profile: <ProfileScreen />,
   detail: (
     <FoodFlowProvider>

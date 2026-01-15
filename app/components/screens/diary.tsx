@@ -4,11 +4,10 @@ import DateSelector from "../navigation/DateSelector";
 import MealSection from "../cards/mealSelection";
 import { useState } from "react";
 import { FoodItem, useFood } from "@/app/FoodContext";
+import { useScreens } from "@/app/ScreenContext";
 
 
-function onAddFood() {
 
-}
 
 
 
@@ -16,6 +15,8 @@ export const DiaryScreen = () => {
   const { foodItems, addFood, getFoodByDate } = useFood();
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [foodList, setFoodList] = useState(getFoodByDate(selectedDate));
+  const {setActiveTab} = useScreens();
+ 
 
   function onChangeDate(date : Date) {
     setSelectedDate(date);
@@ -23,10 +24,14 @@ export const DiaryScreen = () => {
     setFoodList(newfood)
 
   }
+  function onAddFood() {
+
+  setActiveTab("search")
+}
 
   function totalCalories(foodList: FoodItem[]): number {
   return foodList.reduce((total, food) => {
-    return total + Number(food.calories);
+    return total + (Number(food.calories) * Number(food.amount) / 100);
   }, 0);
 }
 

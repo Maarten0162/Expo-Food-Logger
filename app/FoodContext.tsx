@@ -1,6 +1,6 @@
 // app/FoodContext.tsx
-import React, { createContext, useState, useEffect, ReactNode, useContext } from "react";
 import axios from "axios";
+import React, { createContext, ReactNode, useContext, useEffect, useState } from "react";
 
 export type MealType = "Breakfast" | "Lunch" | "Dinner" | "Snacks";
 
@@ -20,6 +20,7 @@ interface FoodContextType {
   foodItems: FoodItem[];
   addFood: (food: FoodItem) => void;
   getFoodByDate: (date: Date) => FoodByMeal;
+  refetchDiary: () => Promise<void>;
 }
 
 interface FoodByMeal {
@@ -28,7 +29,6 @@ interface FoodByMeal {
   Dinner: FoodItem[];
   Snacks: FoodItem[];
 }
-
 
 interface FoodProviderProps {
   children: ReactNode;
@@ -41,12 +41,19 @@ export const FoodItemsContext = createContext<FoodContextType | undefined>(
 export const FoodProvider = ({ children }: FoodProviderProps) => {
   const [foodItems, setFoodItems] = useState<FoodItem[]>([]);
 
-  useEffect(() => {
-    axios
-      .get<FoodItem[]>("https://food-logger-backend-one.vercel.app/api/user-foods")
-      .then((response) => setFoodItems(response.data))
+  const fetchFoodItems = async () => {
+    try {
+      const response = await axios.get<FoodItem[]>(
+        "https://food-logger-backend-one.vercel.app/api/user-foods"
+      );
+      setFoodItems(response.data);
+    } catch (error) {
+      console.error("Failed to fetch food items:", error);
+    }
+  };
 
-      .catch((error) => console.error(error));
+  useEffect(() => {
+    fetchFoodItems();
   }, []);
 
   const addFood = (food: FoodItem) => {
@@ -74,9 +81,8 @@ export const FoodProvider = ({ children }: FoodProviderProps) => {
     return result;
   };
 
-
   return (
-    <FoodItemsContext.Provider value={{ foodItems, addFood, getFoodByDate }}>
+    <FoodItemsContext.Provider value={{ foodItems, addFood, getFoodByDate, refetchDiary: fetchFoodItems }}>
       {children}
     </FoodItemsContext.Provider>
   );

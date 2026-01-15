@@ -2,6 +2,7 @@ import axios from "axios";
 import { useRouter } from "expo-router";
 import React, { useEffect, useState } from "react";
 import { ActivityIndicator, Text, View, StyleSheet } from "react-native";
+import { SafeAreaProvider, SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { colors } from "./theme/color";
 import { BottomNavBar } from "./components/navigation/BottomNavBar";
@@ -38,6 +39,7 @@ const [goals, setGoals] = useState<any[]>([]);
   }, []);
 
   return (
+    <SafeAreaView style={styles.safeArea} edges={["top", "bottom"]}>
     <View style={styles.container}>
       <View style={styles.content}>
   
@@ -46,6 +48,7 @@ const [goals, setGoals] = useState<any[]>([]);
 
       <BottomNavBar activeTab={activeTab} onTabChange={setActiveTab} />
     </View>
+    </SafeAreaView>
   );
 }
 
@@ -56,6 +59,9 @@ const styles = StyleSheet.create({
   },
   content: {
     flex: 1,
-    padding: 20,
   },
+  safeArea: {
+    flex: 1,
+    backgroundColor: '#020617'
+  }
 });

@@ -1,19 +1,31 @@
-import { colors } from "@/app/theme/color";
-import React, { useContext, useEffect, useState } from "react";
-import { View, Text, StyleSheet, ScrollView } from "react-native";
+import { useFood } from "@/app/FoodContext";
+import { useProgres } from "@/app/ProgressContext";
+import React, { useState } from "react";
+import { RefreshControl, ScrollView, StyleSheet } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { CaloriesCard } from "../cards/caloriesCard";
 import { NutrientsCard } from "../cards/nutrientsCard";
-import { GoalsContext, useGoals } from "@/app/GoalsContext";
-import { useProgres } from "@/app/ProgressContext";
-
 
 export const HomeScreen = () => {
-    const { calorie_goal, protein_goal, carb_goal, fat_goal } = useGoals();
-    const { calories_left, protein_left, fat_left, carbs_left } = useProgres();
+    const { calories_left, protein_left, fat_left, carbs_left, refetch } = useProgres();
+    const {refetchDiary} = useFood();
+    const [refreshing, setRefreshing] = useState(false);
+    const insets = useSafeAreaInsets();
+
+    const onRefresh = async () => {
+        setRefreshing(true);
+        await refetch();
+        await refetchDiary();
+        setRefreshing(false);
+    };
+
     return (
         <ScrollView
-            contentContainerStyle={styles.container}
+            contentContainerStyle={[styles.container, { paddingBottom: insets.bottom + 80 }]}
             showsVerticalScrollIndicator={false}
+            refreshControl={
+                <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+            }
         >
             <CaloriesCard caloriesLeft={calories_left} />
             <NutrientsCard
@@ -22,15 +34,13 @@ export const HomeScreen = () => {
                 fatleft={fat_left}
             />
         </ScrollView>
-
     );
 };
 
 const styles = StyleSheet.create({
     container: {
-        marginTop: 16,
         padding: 16,
-        width: "100%",          // make content take full screen width
-        alignItems: "flex-start", // allow children to stretch
+        width: "100%",
+        alignItems: "flex-start",
     },
 });

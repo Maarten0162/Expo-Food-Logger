@@ -18,6 +18,11 @@ const mealIcons = {
   Snacks: Cookie,
 };
 
+function actualMacros(i : number, a : string)
+{
+    return i * Number(a) / 100;
+}
+
 const MealSection = ({
   title,
   foods,
@@ -64,10 +69,10 @@ const MealSection = ({
 
               <View style={styles.foodRight}>
                 <Text style={styles.foodCalories}>
-                  {food.calories} kcal
+                  {actualMacros(food.calories, food.amount)} kcal
                 </Text>
                 <Text style={styles.foodMacros}>
-                  P: {food.protein}g · C: {food.carbs}g · F: {food.fat}g
+                  P: {actualMacros(food.protein, food.amount)}g · C: {actualMacros(food.carbs, food.amount)}g · F: {actualMacros(food.fat, food.amount)}g
                 </Text>
               </View>
             </View>

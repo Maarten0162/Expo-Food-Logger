@@ -6,6 +6,8 @@ import { FoodItem, MealType, useFood } from "@/app/FoodContext";
 import { useFoodFlow } from "@/app/FoodFlowProvider";
 import { colors } from "@/app/theme/color";
 import axios from "axios";
+import { useScreens } from "@/app/ScreenContext";
+import { useProgres } from "@/app/ProgressContext";
 
 
 async function logfood({ foodItem, amount, mealType, date }: { foodItem: FoodItem, amount: number, mealType: MealType, date: Date }) {
@@ -40,20 +42,27 @@ export const FoodDetailScreen = () => {
 
   const [amount, setAmount] = useState("100"); // default amount in grams
   const [mealType, setMealType] = useState<MealType>("Breakfast");
+  const {activeTab, setActiveTab} = useScreens()
+  const {refetch} = useProgres();
+  const {refetchDiary} = useFood();
+  
 
   const calories = Number(foodItem.calories) * (Number(amount) / 100);
   const protein = Number(foodItem.protein) * (Number(amount) / 100);
   const carbs = Number(foodItem.carbs) * (Number(amount) / 100);
   const fat = Number(foodItem.fat) * (Number(amount) / 100);
 
-  const handleLogFood = () => {
-    alert(`${foodItem.name} logged for ${mealType}`);
+
+  const handleLogFood = async () => {
     logfood({
       foodItem,
       amount: Number(amount),
       mealType,
       date: new Date(), // call the constructor
     });
+    await refetch();
+    await refetchDiary();
+    setActiveTab("home")
 
   };
 
@@ -143,7 +152,6 @@ const styles = StyleSheet.create({
     marginTop: 40,
   },
   title: {
-    marginTop: 12,
     fontSize: 22,
     fontWeight: "600",
     color: "#f9fafb",

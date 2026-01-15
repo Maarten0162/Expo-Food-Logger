@@ -13,7 +13,9 @@ export interface Progres {
   fat_left: number;
 }
 
-interface ProgresContextType extends Progres {}
+interface ProgresContextType extends Progres {
+  refetch: () => Promise<void>;
+}
 
 interface ProgresProviderProps {
   children: ReactNode;
@@ -34,7 +36,6 @@ export const ProgresProvider = ({ children }: ProgresProviderProps) => {
     fat_left: 0,
   });
 
-useEffect(() => {
   const fetchProgress = async () => {
     try {
       const response = await axios.get<Progres>(
@@ -58,21 +59,21 @@ useEffect(() => {
     }
   };
 
-  fetchProgress();
-}, []);
+  useEffect(() => {
+    fetchProgress();
+  }, []);
 
-
-
-
-
-  return <ProgresContext.Provider value={progres}>{children}</ProgresContext.Provider>;
+  return (
+    <ProgresContext.Provider value={{ ...progres, refetch: fetchProgress }}>
+      {children}
+    </ProgresContext.Provider>
+  );
 };
 
 export function useProgres() {
     const context = useContext(ProgresContext);
     if (context === undefined) {
-        throw new Error("progresscontext  Undifined");
-         
+        throw new Error("progresscontext Undefined");
     }
     return context;
 }

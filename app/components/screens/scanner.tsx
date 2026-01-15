@@ -17,7 +17,7 @@ interface Nutriments {
   saturated_fat_100g?: number;
 }
 
-interface ProductData {
+export interface ProductData {
   code: string;
   product: {
     id: string;
