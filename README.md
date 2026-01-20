@@ -11,7 +11,7 @@ Het project is ontwikkeld als onderdeel van mijn HBO-ICT opleiding.
 
 ## Live Demo
 
-- Live App: https://food-logger-app--4rq0qn33wn.expo.app/  
+- Live App: https://food-logger-app--vly443793q.expo.app/  
 - GitHub Repository: https://github.com/Maarten0162/Expo-Food-Logger  
 
 ---
