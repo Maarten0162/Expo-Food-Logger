@@ -1,80 +1,67 @@
 import axios from "axios";
 import { useRouter } from "expo-router";
 import React, { useEffect, useState } from "react";
-import { ActivityIndicator, Button, Image, Text, View } from "react-native";
+import { ActivityIndicator, Text, View, StyleSheet } from "react-native";
+import { SafeAreaProvider, SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
+
+import { colors } from "./theme/color";
+import { BottomNavBar } from "./components/navigation/BottomNavBar";
+import { ScreenKey } from "./components/screens/types";
+import { ScreenRenderer } from "./components/screens/ScreenRenderer";
+import { useScreens } from "./ScreenContext";
 
 export default function Index() {
   const router = useRouter();
+
+  const {activeTab, setActiveTab} = useScreens()
 
   const [food, setFood] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    const fetchData = async () => {
+  // ✅ Fetch food once when the component mounts
+const [goals, setGoals] = useState<any[]>([]);
+    
+     useEffect(() => {
+    // This runs only once when the component mounts
+    const fetchGoals = async () => {
       try {
         const response = await axios.get(
-          "https://food-logger-backend-one.vercel.app/api/food"
+          "https://food-logger-backend-one.vercel.app/api/user-goals"
         );
-        setFood(response.data);
-      } catch (err: any) {
-        console.error("Error fetching food:", err.message);
-        setError(err.response?.data?.error || err.message);
-      } finally {
-        setLoading(false);
+        setGoals(response.data);
+      } catch (error) {
+        console.error("Failed to fetch goals:", error);
       }
     };
 
-    //getfood();
-    //fetchData();
+    fetchGoals();
   }, []);
 
   return (
-    <View
-      style={{
-        flex: 1,
-        justifyContent: "center",
-        alignItems: "center",
-        padding: 20,
-        gap: 20,
-      }}
-    >
-      {/* ⬇️ Navigation button */}
-      <Button title="Go to scanner" onPress={() => router.push("/scanner")} />
+    <SafeAreaView style={styles.safeArea} edges={["top", "bottom"]}>
+    <View style={styles.container}>
+      <View style={styles.content}>
+  
+        <ScreenRenderer activeTab={activeTab} />
+      </View>
 
-      {loading ? (
-        <ActivityIndicator size="large" color="#0000ff" />
-      ) : error ? (
-        <Text style={{ color: "red", textAlign: "center" }}>
-          ⚠️ Error: {error}
-        </Text>
-      ) : (
-        <>
-          <Text style={{ fontSize: 18, marginBottom: 10 }}>Food data:</Text>
-          {food.length === 0 ? (
-            <Text>No food items found.</Text>
-          ) : (
-            food.map((item) => (
-              <Text key={item.id}>
-                🍎 {item.foodname} - {item.calories} kcal
-              </Text>
-            ))
-          )}
-        </>
-      )}
-
-      <Image
-        source={require("../assets/images/icon.png")}
-        style={{ width: 200, height: 200, marginTop: 20 }}
-      />
+      <BottomNavBar activeTab={activeTab} onTabChange={setActiveTab} />
     </View>
+    </SafeAreaView>
   );
 }
 
-async function getfood() {
-  const response = await fetch(
-    "https://food-logger-backend-one.vercel.app/api/food"
-  );
-  const data = await response.json();
-  console.log(data);
-}
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: colors.background,
+  },
+  content: {
+    flex: 1,
+  },
+  safeArea: {
+    flex: 1,
+    backgroundColor: '#020617'
+  }
+});
