@@ -1,6 +1,6 @@
 # Food Logger — Expo
 
-![Food Logger Screenshot](public/GitBannerFoodLogger.png)
+![Food Logger Screenshot](assets/images/GitBannerFoodLogger.png)
 
 Een mobiele food tracking applicatie gebouwd met Expo (React Native), waarin gebruikers producten kunnen scannen, zoeken en loggen.  
 De applicatie maakt gebruik van een eigen backend API, de OpenFoodFacts database en een PostgreSQL database voor opslag.  
